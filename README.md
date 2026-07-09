@@ -72,6 +72,14 @@ Then say: **"用指揮官模式跑這個題目"** / **"run this in commander mod
 
 The skill checks this itself (Phase −1): if the task is small, the verification can't be made objective, or the token budget is tight — it will tell you to just do the task directly. Loop engineering is not a universal answer.
 
+### Advisor mode: a lighter alternative
+
+Claude Code also ships an experimental `/advisor <model>` command: your main model runs cheap, and Claude automatically consults a stronger advisor at key decision points (before committing to an approach, on repeated errors, before declaring done). It's a good fit for exactly the tasks Phase −1 already tells you to skip the full workflow for.
+
+It's not a substitute for the commander workflow, though — the advisor gives a second opinion to the *same* executor, which usually just follows it; there's no independent verifier, no objective gate, no stop condition. It also has two known rough edges worth knowing before you rely on it: (1) if your session (or any subagent inside it) has loaded a deferred tool via `ToolSearch` — which stock Claude Code routinely does — advisor calls afterward deterministically fail ([GitHub #73923](https://github.com/anthropics/claude-code/issues/73923), closed as not planned); (2) with a frontier model as the main model, very long transcripts (~100K+ tokens) can silently disable the advisor too ([GitHub #67609](https://github.com/anthropics/claude-code/issues/67609)).
+
+See the "Advisor 模式" section in [`SKILL.md`](SKILL.md) for full guidance, including the trap of running this skill's verifier while an advisor is still attached — it erodes the independence the whole workflow depends on.
+
 ### Related
 
 Sister project: [loop-engineering-reviewer](https://github.com/DennisWei9898/loop-engineering-reviewer) — run your loop with the commander, then audit the loop itself against the seven Loop Engineering rules.
@@ -132,6 +140,14 @@ cp SKILL.md ~/.claude/skills/fable-commander/SKILL.md
 ### 什麼時候不該用
 
 skill 自己會先檢查（Phase −1）：任務太小、驗證無法客觀化、或 token 預算緊——它會直接告訴你「這題直接做比較划算」。Loop engineering 不是萬用解。
+
+### Advisor 模式：更輕量的替代方案
+
+Claude Code 另外還有一個實驗性的 `/advisor <model>` 指令：主模型跑便宜的，Claude 在關鍵決策點（提交方案前、錯誤重複、宣告完成前）自動諮詢更強的 advisor。這正好適合 Phase −1 判定「不值得跑完整流程」的那些任務。
+
+但它取代不了指揮官工作流——advisor 是給同一個執行者的第二意見，執行者通常照做；沒有獨立 verifier、沒有客觀 gate、沒有停止條件。而且有兩個值得先知道的已知坑：(1) 如果你的 session（或任何 subagent）曾用 `ToolSearch` 載入過 deferred 工具——標準 Claude Code 常態性會這樣做——之後的 advisor 呼叫會確定性失敗（[GitHub #73923](https://github.com/anthropics/claude-code/issues/73923)，Anthropic 已標記不打算修）；(2) 用 frontier 模型當主模型時，很長的對話（約 100K+ tokens）也可能讓 advisor 悄悄失效（[GitHub #67609](https://github.com/anthropics/claude-code/issues/67609)）。
+
+完整說明見 [`SKILL.md`](SKILL.md) 的「Advisor 模式」節，包含「開著 advisor 跑本 skill 的 verifier」這個陷阱——它會侵蝕整個工作流賴以運作的獨立性。
 
 ### 姊妹作
 
