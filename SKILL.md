@@ -19,15 +19,15 @@ Claude Code 的 main loop 模型**無法由 Claude 自行切換**（`/model` 是
 
 `/advisor <model>` 是 Claude Code 官方（實驗性）功能：主模型跑便宜的（如 Sonnet），Claude 在關鍵時刻（提交方案前／錯誤重複／宣告完成前）**自動諮詢**更強的 advisor（如 Opus）。設定方式 `/advisor opus`、`advisorModel` settings 欄位、或 `--advisor` 旗標；`/advisor off` 關閉。需 Claude Code v2.1.98+，僅 Anthropic API（Bedrock/Vertex/Foundry 不支援）。mid-session 即生效、不需重開 session（官方文件明說中途啟用停用不使 prompt cache 失效）。
 
-**何時用它取代本 skill**：任務小、大多 routine、但方案品質關鍵——就是 Phase −1 判「不值得跑完整 loop」的地帶。
+**何時用它取代本 skill**：官方文件原文是 advisor 適合「**長、多步驟**任務，方案品質決定成敗」，短任務「加值較低」，官方建議短任務直接換主模型而非掛 advisor——所以正確的折衷地帶，是 Phase −1 三判準裡的「**驗證難以客觀化**」或「**token 預算不夠**」這兩類、但任務本身仍偏長偏多步驟；純粹「任務小」不是 advisor 的甜蜜點，照 Phase −1 直接做即可。
 
 **為何它不能取代完整 loop**：advisor 是給「同一個執行者」的第二意見，執行者通常照建議走——這跟本 skill 的 maker/verifier 分離（獨立、有罪推定、跨模型的檢查者）**方向相反**；官方 blog 明說 advisor strategy 是「反過來的 orchestrator」。所以 advisor 沒有獨立驗證、沒有 gate/停止紀律、沒有證據要求。防「誤報完成」的護欄只有完整 loop 才有。
 
 **⚠️ 與本 skill 併用的陷阱**：官方文件白紙黑字「子代理繼承已設定的顧問，並針對自身模型做配對檢查」。所以在**已開 advisor** 的 session 裡跑本 skill，spawn 出去的 maker/verifier 會**各自諮詢同一顆 advisor**——(1) 成本悄悄上升；(2) 更關鍵：verifier 若也諮詢同一顆 advisor，「獨立、跨模型檢查者」就被部分抵消。**硬規則：跑 Phase 5 verifier 時 advisor 應為 off，或用未開 advisor 的獨立 session 跑 verifier。**（advisor 目前無 per-subagent 開關。）
 
-**⚠️ 已知相容性 bug**：session（含其內部 subagent）只要在呼叫 advisor **前**用 `ToolSearch` 載入過任何 deferred tool（例：內建 `WebFetch`，或任何 MCP 工具），之後每次 advisor 呼叫都會**確定性失效**（[GitHub #73923](https://github.com/anthropics/claude-code/issues/73923)，Anthropic 已標記 Closed as not planned）。這條會命中很多真實 session——標準 Claude Code 常態性用 ToolSearch 載入 deferred 內建工具。另外，用 frontier 模型當主模型時，長對話（約 100K+ tokens）也可能讓 advisor 悄悄失效（[GitHub #67609](https://github.com/anthropics/claude-code/issues/67609)）。**不要單靠 advisor 當唯一防線。**
+**⚠️ 已知相容性 bug**：session（含其內部 subagent）只要在呼叫 advisor **前**用 `ToolSearch` 載入過任何 deferred tool（例：內建 `WebFetch`，或任何 MCP 工具），之後每次 advisor 呼叫都會**確定性失效**（[GitHub #73923](https://github.com/anthropics/claude-code/issues/73923)，Anthropic 已標記 Closed as not planned）。這條會命中很多真實 session——標準 Claude Code 常態性用 ToolSearch 載入 deferred 內建工具。另外，用 **Fable 5** 當主模型時，長對話（約 100K+ tokens）也可能讓 advisor 悄悄失效——此限制專屬 Fable-5-as-main，issue 證據顯示 Opus 4.8 當主模型在 296K context 仍正常（[GitHub #67609](https://github.com/anthropics/claude-code/issues/67609)）。**不要單靠 advisor 當唯一防線。**
 
-**輕量逃生口**：Phase −1 判「不值得跑完整 loop」時，除了「直接做」，還可建議一條中間路線——`/model sonnet` + `/advisor opus`：便宜模型執行、更強模型在關鍵決策點被自動諮詢，無 loop 的多 agent 開銷（併用陷阱見上）。
+**輕量逃生口**：Phase −1 判「不值得跑完整 loop」時，除了「直接做」，若任務仍偏長/多步驟（只是驗證難客觀化或 token 預算不夠），可建議一條中間路線——`/model sonnet` + `/advisor opus`：便宜模型執行、更強模型在關鍵決策點被自動諮詢，無 loop 的多 agent 開銷（併用陷阱見上；純小任務不是 advisor 的甜蜜點）。
 
 ## 適用性檢查（Phase −1，先過再開跑）
 
