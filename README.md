@@ -68,6 +68,10 @@ Then say: **"用指揮官模式跑這個題目"** / **"run this in commander mod
 - [`examples/PLAN-sample.md`](examples/PLAN-sample.md) — a real-shaped state file after a full Phase 0–6 run: acceptance criteria, gate-by-gate rounds, adoption rate.
 - [`examples/verifier-report-sample.md`](examples/verifier-report-sample.md) — what a verifier report looks like: PASS/FAIL with evidence, plus the "suggestions (non-blocking)" lane that protects your style.
 
+<a href="guide/指揮官派工手冊.pdf"><img src="guide/cover.png" width="280" alt="指揮官派工手冊 cover"></a>
+
+**[指揮官派工手冊.pdf](guide/指揮官派工手冊.pdf)** — a visual, walk-through handbook (Traditional Chinese): when a request is big enough to dispatch to the commander, how the two AskUserQuestion checkpoints work, and when the Advisor mode is actually the right call.
+
 ### When *not* to use it
 
 The skill checks this itself (Phase −1): if the task is small, the verification can't be made objective, or the token budget is tight — it will tell you to just do the task directly. Loop engineering is not a universal answer.
@@ -136,6 +140,10 @@ cp SKILL.md ~/.claude/skills/fable-commander/SKILL.md
 
 - [`examples/PLAN-sample.md`](examples/PLAN-sample.md) —— 一份跑完 Phase 0–6 的範例 state file：驗收標準、逐 gate 輪次紀錄、採納率。
 - [`examples/verifier-report-sample.md`](examples/verifier-report-sample.md) —— verifier 報告長相：PASS/FAIL + 證據，以及保護你風格的「建議（不擋交付）」欄。
+
+<a href="guide/指揮官派工手冊.pdf"><img src="guide/cover.png" width="280" alt="指揮官派工手冊封面"></a>
+
+**[指揮官派工手冊.pdf](guide/指揮官派工手冊.pdf)** —— 圖文教學手冊：什麼需求夠格叫指揮官出馬、兩個 AskUserQuestion 卡點怎麼答、以及什麼時候該開 Advisor 模式。
 
 ### 什麼時候不該用
 
