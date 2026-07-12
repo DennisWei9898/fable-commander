@@ -113,6 +113,12 @@ commit / push / 對外發布 / 花錢（付費 API、下單）之前一律停下
 3. 教訓回灌：這次流程哪個 gate 設計得不好 → 直接改本 SKILL.md（記日期），讓 loop 自我改進
 4. 提醒使用者**讀關鍵 diff /報告本體**——comprehension debt 與 cognitive surrender 是使用者自己要守的線，skill 只能提醒
 
+## 實戰教訓：感知品質類任務的驗收（2026-07-12）
+
+**感知品質類任務（語音自然度/腔調/視覺美感/文案人味）的驗收 gate 必含人類感官，機器 proxy 只當 sanity check、不當過閘依據。** 本機語音克隆實證：maker/verifier loop 報「6 條 AC 全 PASS」——speaker cosine 0.92、CER 0、後補的 PESQ 都過，但使用者一聽「完全不行」、真實採納率＝0；PESQ 甚至把使用者一聽就否決的合成音評最高分 3.01。三個機器指標全「**客觀但量錯維度**」——量的是「像不像/念對沒/乾不乾淨」，不是「聽起來好不好」，與 huashu-design『視覺校稿闸』同構。
+
+**硬規則**：①感知品質類 acceptance 設**雙層**——機器預篩（濾掉明顯壞的）＋ **人類感官硬閘（唯一能關 loop）**；②明文禁止拿 cosine/CER/PESQ/UTMOS 宣稱「過了」，它們是 sanity check 不是 gate；③不確定寧可產樣本交使用者感官判，不要 loop 自宣 done（誤報完成＝Ralph Wiggum）。
+
 ## 反模式對照表（自檢用）
 
 | 陷阱 | 本 skill 的對策 |
